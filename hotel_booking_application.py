@@ -15,7 +15,7 @@ class Booking:  # one booking record
         self.customer_name = input("Enter your customer name: ")
         self.customer_email = input("Enter your customer email: ")
         self.customer_address = input("Enter your customer address: ")
-        self.customer_phone = input("Enter your customer number: ")
+        self.customer_phone = input("Enter your customer phone number: ")
 
 
 class BookingSystem:  #all bookings will be stored here
