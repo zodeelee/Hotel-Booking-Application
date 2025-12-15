@@ -1,7 +1,13 @@
-class Booking:  # one booking record
+import os
+import pickle
+
+
+class Booking:
+    """One booking record"""
+
     def __init__(self):
-        self.r_id = ""
-        self.r_name = ""
+        self.room_id = ""
+        self.room_name = ""
         self.customer_id = ""
         self.customer_name = ""
         self.customer_email = ""
@@ -9,8 +15,8 @@ class Booking:  # one booking record
         self.customer_phone = ""
 
     def add_customer(self):
-        self.r_id = input("Enter room ID: ")
-        self.r_name = input("Enter room name[Standard,Deluxe,Suite]: ")
+        self.room_id = input("Enter room ID: ")
+        self.room_name = input("Enter room name [Standard, Deluxe, Suite]: ")
         self.customer_id = input("Enter your customer ID: ")
         self.customer_name = input("Enter your customer name: ")
         self.customer_email = input("Enter your customer email: ")
@@ -18,23 +24,19 @@ class Booking:  # one booking record
         self.customer_phone = input("Enter your customer phone number: ")
 
 
-class BookingSystem:  #all bookings will be stored here
-    def __init__(self):
-        self.bookings = []
+class BookingSystem:
+    """Handles all bookings"""
 
-    def add_booking(self, booking):
-        self.bookings.append(booking)
-
-    def view_all_bookings(self):
-        if not self.bookings:
+    def view_all_bookings(self, bookings):
+        if not bookings:
             print("\nNo bookings found.")
             return
 
         print("\n=== All Bookings ===")
-        for i, b in enumerate(self.bookings, 1):
+        for i, b in enumerate(bookings, 1):
             print(f"\nBooking {i}:")
-            print(f" Room ID: {b.r_id}")
-            print(f" Room Name: {b.r_name}")
+            print(f" Room ID: {b.room_id}")
+            print(f" Room Name: {b.room_name}")
             print(f" Customer ID: {b.customer_id}")
             print(f" Customer Name: {b.customer_name}")
             print(f" Email: {b.customer_email}")
@@ -43,10 +45,27 @@ class BookingSystem:  #all bookings will be stored here
 
 
 # =======================================================
-# storing system
+# Pickle functions
+
+FILENAME = "pickle_data.pkl"
+
+def save(bookings):
+    with open(FILENAME, "wb") as f:
+        pickle.dump(bookings, f)
+
+def load():
+    if not os.path.exists(FILENAME):
+        return []
+    try:
+        with open(FILENAME, "rb") as f:
+            return pickle.load(f)
+    except EOFError:
+        return []
+
+# =======================================================
+# Load data & initialize system
+bookings = load()
 system = BookingSystem()
-
-
 
 # =======================================================
 # MAIN MENU
@@ -54,33 +73,29 @@ system = BookingSystem()
 while True:
     print("\n------------------------------------")
     print("Hotel Booking Application")
-    print("1. [Add a new booking]")
-    print("2. [View all bookings]")
-    print("3. [Exit]")
+    print("1. Add a new booking")
+    print("2. View all bookings")
+    print("3. Exit")
     print("------------------------------------")
 
-    option = int(input("Enter your choice: "))
+    try:
+        option = int(input("Enter your choice: "))
+        if option == 1:
+            booking = Booking()
+            booking.add_customer()
+            bookings.append(booking)
+            save(bookings)
+            print("\nBooking added successfully!")
 
-    if option == 1:
-        booking = Booking()
-        booking.add_customer()
-        system.add_booking(booking)
-        print("Booking adduced successfully!")
+        elif option == 2:
+            system.view_all_bookings(bookings)
 
-    if option == 2:
-        system.view_all_bookings()
-        print("All booking's viewed succesfully!")
+        elif option == 3:
+            print("You've stopped the program!")
+            break
 
-    if option == 3:
-        print("You've stopped the program!")
-        break
+        else:
+            print("Invalid option. Please try again.")
 
-
-#streamlit page
-
-    #import streamlit as st
-    from PIL import Image
-
-    #col1, col2 = st.columns(2)
-
-
+    except ValueError:
+        print("Please enter a valid number.")
